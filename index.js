@@ -128,7 +128,7 @@ app.post('/api/shorturl', URL_ENCODED_PARSER, function (req, res) {
   // check url validation
   dns.lookup(HOSTNAME, (error, address, family) => {
     // if url is valid => continue
-    if (!error) {
+    if (!error && HOSTNAME) {
       const URL_HREF = URL_OBJ.href
       // if element is new => save in db and generate new short_url
       if (!db.doesElementExist(URL_HREF)) {
@@ -140,7 +140,7 @@ app.post('/api/shorturl', URL_ENCODED_PARSER, function (req, res) {
         db.data.push(newDbEntry)
 
         // respond with new db entry
-        res.send({
+        res.json({
           original_url: URL_HREF,
           short_url: NEW_SHORT_URL,
         })
@@ -151,7 +151,7 @@ app.post('/api/shorturl', URL_ENCODED_PARSER, function (req, res) {
         console.log(`Found existing datbase entry: ${JSON.stringify(DB_ELEMENT)}`)
 
         // respond with  db entry
-        res.send({
+        res.json({
           original_url: DB_ELEMENT.original_url,
           short_url: DB_ELEMENT.short_url
         })
@@ -159,7 +159,7 @@ app.post('/api/shorturl', URL_ENCODED_PARSER, function (req, res) {
     }
     // if url is not valid => respond with error
     else {
-      res.send({
+      res.json({
         error: 'invalid url'
       })
     }
@@ -182,15 +182,15 @@ app.get('/api/shorturl/:short_url', function (req, res) {
       res.redirect(REDIRECT_TO)
     }
     // if :short_url does not exist in database => send feedback
-    else {
-      res.send({
-        error: 'short_url does not match any database entry.'
+    /* else {
+      res.json({
+        error: 'invalid url'
       })
-    }
+    } */
   }
   // if req param :short_url is not a valid number => respond with error
   else {
-    res.send({
+    res.json({
       error: 'invalid url'
     })
   }
